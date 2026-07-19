@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>English Word Test</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "Malgun Gothic", "맑은 고딕", sans-serif;
+      font-weight: bold;
+      background: #f4f6f8;
+      color: #1a1a1a;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+    }
+
+    h1 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #555;
+      margin-bottom: 1.5rem;
+    }
+
+    .chapter-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+      margin-bottom: 2rem;
+      max-width: 520px;
+    }
+
+    .chapter-btn {
+      border: 2px solid #ccc;
+      background: #fff;
+      border-radius: 8px;
+      padding: 0.45rem 0.75rem;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .chapter-btn:hover {
+      border-color: #888;
+    }
+
+    .chapter-btn.active {
+      border-color: #333;
+      background: #333;
+      color: #fff;
+    }
+
+    .word-card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+      width: min(90vw, 480px);
+      min-height: 220px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .word {
+      font-size: clamp(2rem, 8vw, 3rem);
+      font-weight: bold;
+      text-align: center;
+      line-height: 1.2;
+      transition: color 0.2s;
+    }
+
+    .word.easy { color: #2e7d32; }
+    .word.middle { color: #1565c0; }
+    .word.hard { color: #e65100; }
+    .word.reallyHard { color: #b71c1c; }
+
+    .nav {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .nav button {
+      border: none;
+      background: #333;
+      color: #fff;
+      font-size: 1rem;
+      padding: 0.75rem 2rem;
+      border-radius: 10px;
+      cursor: pointer;
+      min-width: 120px;
+    }
+
+    .nav button:hover {
+      background: #555;
+    }
+
+    .nav button:disabled {
+      background: #bbb;
+      cursor: not-allowed;
+    }
+
+    .legend {
+      margin-top: 2rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      font-size: 0.85rem;
+      margin-bottom: 1rem;
+    }
+
+    .legend span {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .dot.easy { background: #2e7d32; }
+    .dot.middle { background: #1565c0; }
+    .dot.hard { background: #e65100; }
+    .dot.reallyHard { background: #b71c1c; }
+
+    .empty {
+      color: #888;
+      font-size: 1.1rem;
+    }
+
+    .progress-wrap {
+      width: min(90vw, 480px);
+      margin-bottom: 1.5rem;
+    }
+
+    .progress-text {
+      font-size: 0.95rem;
+      color: #555;
+      text-align: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: #ddd;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: #333;
+      border-radius: 999px;
+      transition: width 0.2s ease;
+    }
+
+    .level-info {
+      width: min(90vw, 480px);
+      font-size: 0.8rem;
+      font-weight: normal;
+      color: #666;
+      line-height: 1.7;
+      text-align: left;
+    }
+
+    .level-info p {
+      margin-bottom: 0.35rem;
+    }
+
+    .level-info .label-easy { color: #2e7d32; font-weight: bold; }
+    .level-info .label-middle { color: #1565c0; font-weight: bold; }
+    .level-info .label-hard { color: #e65100; font-weight: bold; }
+    .level-info .label-reallyHard { color: #b71c1c; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>English Word Test</h1>
+
+  <div class="chapter-row" id="chapters"></div>
+
+  <div class="word-card">
+    <p class="word" id="word">—</p>
+  </div>
+
+  <div class="nav">
+    <button id="back" type="button">Back</button>
+    <button id="front" type="button">Front</button>
+  </div>
+
+  <div class="progress-wrap">
+    <p class="progress-text" id="progress-text">0 / 0</p>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress-fill"></div>
+    </div>
+  </div>
+
+  <div class="legend">
+    <span><i class="dot easy"></i> Easy</span>
+    <span><i class="dot middle"></i> Middle</span>
+    <span><i class="dot hard"></i> Hard</span>
+    <span><i class="dot reallyHard"></i> Really Hard</span>
+  </div>
+
+  <div class="level-info">
+    <p><span class="label-easy">easy</span> : 중학교~기초 수능</p>
+    <p><span class="label-middle">mid</span> : 수능·토익 핵심</p>
+    <p><span class="label-hard">hard</span> : 상위권 수능·토익</p>
+    <p><span class="label-reallyHard">very hard</span> : SAT·대학 수준 또는 매우 드문 고급 어휘</p>
+  </div>
+
+  <script src="words.js"></script>
+  <script>
+    let chapter = 1;
+    let index = 0;
+
+    const chaptersEl = document.getElementById("chapters");
+    const wordEl = document.getElementById("word");
+    const backBtn = document.getElementById("back");
+    const frontBtn = document.getElementById("front");
+    const progressText = document.getElementById("progress-text");
+    const progressFill = document.getElementById("progress-fill");
+
+    for (let i = 1; i <= 11; i++) {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "chapter-btn" + (i === 1 ? " active" : "");
+      btn.textContent = "Ch " + i;
+      btn.dataset.chapter = i;
+      btn.addEventListener("click", () => selectChapter(i));
+      chaptersEl.appendChild(btn);
+    }
+
+    function getList() {
+      return WORDS[chapter] || [];
+    }
+
+    function selectChapter(num) {
+      chapter = num;
+      index = 0;
+      document.querySelectorAll(".chapter-btn").forEach((btn) => {
+        btn.classList.toggle("active", Number(btn.dataset.chapter) === num);
+      });
+      render();
+    }
+
+    function formatWord(text) {
+      const lower = text.toLowerCase();
+      return lower.charAt(0).toUpperCase() + lower.slice(1);
+    }
+
+    function render() {
+      const list = getList();
+      const item = list[index];
+
+      wordEl.className = "word";
+
+      if (!item) {
+        wordEl.textContent = "No words in this chapter";
+        wordEl.classList.add("empty");
+      } else {
+        wordEl.textContent = formatWord(item.english);
+        wordEl.classList.add(item.level);
+      }
+
+      backBtn.disabled = index <= 0;
+      frontBtn.disabled = index >= list.length - 1;
+
+      const total = list.length;
+      const current = total === 0 ? 0 : index + 1;
+      progressText.textContent = current + " / " + total;
+      progressFill.style.width = total === 0 ? "0%" : (current / total * 100) + "%";
+    }
+
+    backBtn.addEventListener("click", () => {
+      if (index > 0) {
+        index--;
+        render();
+      }
+    });
+
+    frontBtn.addEventListener("click", () => {
+      const list = getList();
+      if (index < list.length - 1) {
+        index++;
+        render();
+      }
+    });
+
+    render();
+  </script>
+</body>
+</html>
